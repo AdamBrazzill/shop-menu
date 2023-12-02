@@ -1,0 +1,241 @@
+package controllers
+
+import models.Electronics
+import persistence.JSONSerializer
+import persistence.Serializer
+import java.io.File
+
+/**
+ * The `ElectronicAPI` class manages electronic items and provides various operations to interact with them.
+ *
+ * @property serializer The serializer used for data storage.
+ */
+private val electronicAPI = ElectronicAPI(JSONSerializer(File("electronics.json")))
+
+class ElectronicAPI(serializerType: Serializer) {
+    private var electronicsList = ArrayList<Electronics>()
+    private var serializer: Serializer = serializerType
+
+    /**
+     * Formats a list of electronics into a string.
+     *
+     * @param electronicsToFormat The list of electronics to format.
+     * @return A string representation of the formatted electronics.
+     */
+    private fun formatListString(electronicsToFormat: List<Electronics>): String =
+        electronicsToFormat
+            .joinToString(separator = "\n") { electronic ->
+                electronicsList.indexOf(electronic).toString() + ": " + electronic.toString()
+            }
+
+    /**
+     * Adds an electronic item to the list of electronics.
+     *
+     * @param electronic The electronic item to add.
+     * @return `true` if the electronic item is successfully added, `false` otherwise.
+     */
+    fun addElectronic(electronic: Electronics): Boolean {
+        electronic.electronicId = getId()
+        return electronicsList.add(electronic)
+    }
+
+    /**
+     * Lists all electronics.
+     *
+     * @return A string representation of all electronics.
+     */
+    fun listAllElectronics(): String =
+        if (electronicsList.isEmpty()) "No electronics stored"
+        else formatListString(electronicsList)
+
+    /**
+     * Lists active electronics.
+     *
+     * @return A string representation of active electronics.
+     */
+    fun listActiveElectronics(): String =
+        if (numberOfActiveElectronics() == 0) "No active electronics stored"
+        else formatListString(electronicsList.filter { electronic -> !electronic.isNoteArchived })
+
+    /**
+     * Lists archived electronics.
+     *
+     * @return A string representation of archived electronics.
+     */
+    fun listArchivedElectronics(): String =
+        if (numberOfArchivedElectronics() == 0) "No archived electronics stored"
+        else formatListString(electronicsList.filter { electronic -> electronic.isNoteArchived })
+
+    /**
+     * Gets the number of archived electronics.
+     *
+     * @return The number of archived electronics.
+     */
+    fun numberOfArchivedElectronics(): Int = electronicsList.count { electronic -> electronic.isNoteArchived }
+
+    /**
+     * Gets the total number of electronics.
+     *
+     * @return The total number of electronics.
+     */
+    fun numberOfElectronics(): Int = electronicsList.size
+
+    /**
+     * Finds an electronic item by its index.
+     *
+     * @param index The index of the electronic item to find.
+     * @return The found electronic item, or null if the index is invalid.
+     */
+    fun findElectronic(index: Int): Electronics? {
+        return if (isValidListIndex(index, electronicsList)) {
+            electronicsList[index]
+        } else null
+    }
+
+    /**
+     * Checks if an index is valid within a list.
+     *
+     * @param index The index to check.
+     * @param list The list to check against.
+     * @return `true` if the index is valid, `false` otherwise.
+     */
+    private fun isValidListIndex(index: Int, list: List<Any>): Boolean {
+        return (index >= 0 && index < list.size)
+    }
+
+    /**
+     * Gets the number of active electronics.
+     *
+     * @return The number of active electronics.
+     */
+    fun numberOfActiveElectronics(): Int = electronicsList.count { electronic -> !electronic.isNoteArchived }
+
+    /**
+     * Deletes an electronic item by its index.
+     *
+     * @param indexToDelete The index of the electronic item to delete.
+     * @return The deleted electronic item, or null if the index is invalid.
+     */
+    fun deleteElectronic(indexToDelete: Int): Electronics? {
+        return if (isValidListIndex(indexToDelete, electronicsList)) {
+            electronicsList.removeAt(indexToDelete)
+        } else null
+    }
+
+    /**
+     * Updates an electronic item by its index.
+     *
+     * @param indexToUpdate The index of the electronic item to update.
+     * @param electronic The new electronic item details.
+     * @return `true` if the update is successful, `false` otherwise.
+     */
+    fun updateElectronic(indexToUpdate: Int, electronic: Electronics?): Boolean {
+        // Find the electronic item object by the index number
+        val foundElectronic = findElectronic(indexToUpdate)
+        // If the electronic item exists, use the details passed as parameters to update the found item in the ArrayList.
+        if ((foundElectronic != null) && (electronic != null)) {
+            foundElectronic.productCode = electronic.productCode
+            foundElectronic.type = electronic.type
+            foundElectronic.unitCost = electronic.unitCost
+            foundElectronic.numberInStock = electronic.numberInStock
+            foundElectronic.reorderLevel = electronic.reorderLevel
+            foundElectronic.isNoteArchived = electronic.isNoteArchived
+            return true
+        }
+        // If the electronic item was not found, return false
+        return false
+    }
+
+    /**
+     * Checks if an index is valid within the list of electronics.
+     *
+     * @param index The index to check.
+     * @return `true` if the index is valid, `false` otherwise.
+     */
+    fun isValidIndex(index: Int): Boolean {
+        return isValidListIndex(index, electronicsList)
+    }
+
+    /**
+     * Loads electronics from a data source.
+     *
+     * @return `true` if the load is successful, `false` otherwise.
+     */
+    @Throws(Exception::class)
+    fun load(): Boolean {
+        return try {
+            electronicsList = serializer.read() as ArrayList<Electronics>
+            true // Load successful
+        } catch (e: Exception) {
+            false // Load failed
+        }
+    }
+
+    /**
+     * Stores electronics using the data source.
+     */
+    @Throws(Exception::class)
+    fun store() {
+        serializer.write(electronicsList)
+    }
+
+    /**
+     * Archives an electronic item by its index.
+     *
+     * @param indexToArchive The index of the electronic item to archive.
+     * @return `true` if the archive is successful, `false` otherwise.
+     */
+    fun archiveElectronic(indexToArchive: Int): Boolean {
+        if (isValidIndex(indexToArchive)) {
+            val electronicToArchive = electronicsList[indexToArchive]
+            if (!electronicToArchive.isNoteArchived) {
+                electronicToArchive.isNoteArchived = true
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Searches for electronics by product code.
+     *
+     * @param searchString The product code or part of a product code to search for.
+     * @return A string representation of matching electronics.
+     */
+    fun searchElectronicsByProductCode(searchString: String): String =
+        formatListString(
+            electronicsList.filter { electronic -> electronic.productCode.contains(searchString, ignoreCase = true) }
+        )
+
+    /**
+     * Lists electronics by their type.
+     *
+     * @param type The type to filter by.
+     * @return A string representation of electronics of the specified type.
+     */
+    fun listElectronicsByType(type: String): String {
+        val filteredElectronics = electronicsList.filter { electronic -> electronic.type.equals(type, ignoreCase = true) }
+        return if (filteredElectronics.isEmpty()) {
+            "No Electronics of type $type"
+        } else {
+            val listOfElectronics = formatListString(filteredElectronics)
+            "${countElectronicsByType(type)} electronics of type $type: $listOfElectronics"
+        }
+    }
+
+    /**
+     * Counts the number of electronics of the specified type.
+     *
+     * @param type The type to count electronics for.
+     * @return The number of electronics of the specified type.
+     */
+    fun countElectronicsByType(type: String): Int =
+        electronicsList.count { electronic -> electronic.type.equals(type, ignoreCase = true) }
+
+    /**
+     * Gets the next available ID for electronics.
+     *
+     * @return The next available ID.
+     */
+    private fun getId(): Int = electronicsList.size
+}
