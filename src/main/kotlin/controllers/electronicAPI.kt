@@ -1,8 +1,12 @@
 package controllers
 
 import models.Electronics
-import persistence.JSONSerializer
+
+import models.Transactions
 import persistence.Serializer
+import persistence.XMLSerializer
+import utils.ScannerInput.readNextInt
+import utils.ScannerInput.readNextLine
 import java.io.File
 
 /**
@@ -10,7 +14,7 @@ import java.io.File
  *
  * @property serializer The serializer used for data storage.
  */
-private val electronicAPI = ElectronicAPI(JSONSerializer(File("electronics.json")))
+private val electronicAPI = ElectronicAPI(XMLSerializer(File("electronics.xml")))
 
 class ElectronicAPI(serializerType: Serializer) {
     private var electronicsList = ArrayList<Electronics>()
@@ -116,10 +120,10 @@ class ElectronicAPI(serializerType: Serializer) {
      * @param indexToDelete The index of the electronic item to delete.
      * @return The deleted electronic item, or null if the index is invalid.
      */
-    fun deleteElectronic(indexToDelete: Int): Electronics? {
-        return if (isValidListIndex(indexToDelete, electronicsList)) {
-            electronicsList.removeAt(indexToDelete)
-        } else null
+    fun delete(id: Int): Boolean {
+        val initialSize = electronicsList.size
+        electronicsList.removeIf { electronics -> electronics.itemId == id }
+        return electronicsList.size < initialSize
     }
 
     /**
@@ -222,6 +226,92 @@ class ElectronicAPI(serializerType: Serializer) {
             "${countElectronicsByType(type)} electronics of type $type: $listOfElectronics"
         }
     }
+    // Inside ElectronicAPI class
+    fun archiveElectronicItem() {
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val id = readNextInt("Enter the id of the electronic item to archive: ")
+
+            if (findElectronic(id) != null) {
+                if (archiveElectronic(id)) {
+                    println("Electronic item archived successfully.")
+                } else {
+                    println("Failed to archive electronic item.")
+                }
+            } else {
+                println("There are no electronic items for this index number.")
+            }
+        }
+    }
+    fun deleteElectronic(id: Int): Boolean {
+        val initialSize = electronicsList.size
+        electronicsList.removeIf { electronic -> electronic.electronicId == id }
+        return electronicsList.size < initialSize
+    }
+
+    fun addTransactionToElectronicItem() {
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val id = readNextInt("Enter the id of the electronic item to add a transaction to: ")
+
+            findElectronic(id)?.let { electronic ->
+                val numberBought = readNextInt("Enter the number bought: ")
+                val customerName = readNextLine("Enter the customer name: ")
+                val date = readNextLine("Enter the date: ")
+                val salesPerson = readNextLine("Enter the sales person: ")
+
+                val newTransaction = Transactions(
+                    transactionId = 0,
+                    numberBought = numberBought,
+                    customerName = customerName,
+                    date = date,
+                    salesPerson = salesPerson
+                )
+
+                if (Electronics.addTransaction(newTransaction)) {
+                    println("Transaction added successfully.")
+                } else {
+                    println("Failed to add transaction.")
+                }
+            } ?: println("There are no electronic items for this index number.")
+        }
+    }
+    fun updateTransactionInElectronicItem() {
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val electronicId = readNextInt("Enter the id of the electronic item to update a transaction for: ")
+
+            findElectronic(electronicId)?.let { electronic ->
+                val transactionId = readNextInt("Enter the id of the transaction to update: ")
+
+                val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
+
+                if (existingTransaction != null) {
+                    val updatedNumberBought = readNextInt("Enter the updated number bought: ")
+                    val updatedCustomerName = readNextLine("Enter the updated customer name: ")
+                    val updatedDate = readNextLine("Enter the updated date: ")
+                    val updatedSalesPerson = readNextLine("Enter the updated sales person: ")
+
+                    existingTransaction.apply {
+                        numberBought = updatedNumberBought
+                        customerName = updatedCustomerName
+                        date = updatedDate
+                        salesPerson = updatedSalesPerson
+                    }
+
+                    println("Transaction updated successfully.")
+                } else {
+                    println("Transaction with id $transactionId not found in the electronic item.")
+                }
+            } ?: println("Electronic item with id $electronicId not found.")
+        }
+    }
+
+
+
 
     /**
      * Counts the number of electronics of the specified type.
@@ -238,4 +328,8 @@ class ElectronicAPI(serializerType: Serializer) {
      * @return The next available ID.
      */
     private fun getId(): Int = electronicsList.size
+
+
 }
+
+
