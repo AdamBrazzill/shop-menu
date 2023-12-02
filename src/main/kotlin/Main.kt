@@ -12,6 +12,7 @@ fun main() = runMenu()
 fun runMenu() {
     do {
         when (val option = mainMenu()) {
+            9 -> load()
             1 -> addElectronicItem()
             2 -> listAllElectronics(electronicAPI)
             3 -> updateElectronic()
@@ -20,6 +21,8 @@ fun runMenu() {
             6 -> addTransactionToElectronicItem(electronicAPI)
             7 -> updateTransactionInElectronicItem(electronicAPI)
             8 -> markTransactionStatusInElectronicItem(electronicAPI)
+            11 -> save()
+
             0 -> {
                 // Save data before exiting
                 electronicAPI.store()
@@ -178,6 +181,27 @@ fun markTransactionStatusInElectronicItem(ElectronicAPI: ElectronicAPI) {
                 println("Transaction with id $transactionId not found in the electronic item.")
             }
         } ?: println("Electronic item with id $electronicId not found.")
+    }
+}
+
+fun save() {
+    try {
+        electronicAPI.store()
+    } catch (e: Exception) {
+        System.err.println("Error writing to a file: $e")
+    }
+}
+
+/**
+ * Loads notes from a file.
+ */
+fun load() {
+    val isLoadSuccessful = electronicAPI.load()
+
+    if (isLoadSuccessful) {
+        println("Load successful")
+    } else {
+        println("Load failed")
     }
 }
 

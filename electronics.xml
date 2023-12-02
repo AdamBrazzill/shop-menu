@@ -1,0 +1,15 @@
+<object-stream>
+  <list>
+    <models.Electronics>
+      <itemId>0</itemId>
+      <electronicId>0</electronicId>
+      <productCode>1</productCode>
+      <type>1</type>
+      <unitCost>1.0</unitCost>
+      <numberInStock>1</numberInStock>
+      <reorderLevel>1</reorderLevel>
+      <isNoteArchived>false</isNoteArchived>
+      <transactions/>
+    </models.Electronics>
+  </list>
+</object-stream>
