@@ -309,6 +309,29 @@ class ElectronicAPI(serializerType: Serializer) {
             } ?: println("Electronic item with id $electronicId not found.")
         }
     }
+    fun markTransactionStatus(electronicAPI: ElectronicAPI) {
+        electronicAPI.listAllElectronics()
+
+        if (electronicAPI.numberOfElectronics() > 0) {
+            val electronicId = readNextInt("Enter the id of the electronic item to mark transaction status: ")
+
+            electronicAPI.findElectronic(electronicId)?.let { electronic ->
+                val transactionId = readNextInt("Enter the id of the transaction to mark status: ")
+
+                val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
+
+                if (existingTransaction != null) {
+                    val isComplete = readNextLine("Mark transaction as complete? (yes/no)").equals("yes", ignoreCase = true)
+
+                    existingTransaction.isItemComplete = isComplete
+
+                    println("Transaction status marked successfully.")
+                } else {
+                    println("Transaction with id $transactionId not found in the electronic item.")
+                }
+            } ?: println("Electronic item with id $electronicId not found.")
+        }
+    }
 
 
 

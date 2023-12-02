@@ -19,7 +19,7 @@ fun runMenu() {
             5 -> archiveElectronicItem(electronicAPI)
             6 -> addTransactionToElectronicItem(electronicAPI)
             7 -> updateTransactionInElectronicItem(electronicAPI)
-            // Add other options here
+            8 -> markTransactionStatusInElectronicItem(electronicAPI)
             0 -> {
                 // Save data before exiting
                 electronicAPI.store()
@@ -110,7 +110,7 @@ fun archiveElectronicItem(ElectronicAPI: ElectronicAPI) {
     electronicAPI.archiveElectronicItem()
 }
 
-fun addTransactionToElectronicItem(electronicAPI: ElectronicAPI) {
+fun addTransactionToElectronicItem(ElectronicAPI: ElectronicAPI) {
     electronicAPI.addTransactionToElectronicItem()
 }
 fun deleteElectronicItem() {
@@ -126,7 +126,7 @@ fun deleteElectronicItem() {
         }
     }
 }
-fun updateTransactionInElectronicItem(electronicAPI: ElectronicAPI) {
+fun updateTransactionInElectronicItem(ElectronicAPI: ElectronicAPI) {
     electronicAPI.listAllElectronics()
 
     if (electronicAPI.numberOfElectronics() > 0) {
@@ -151,6 +151,29 @@ fun updateTransactionInElectronicItem(electronicAPI: ElectronicAPI) {
                 }
 
                 println("Transaction updated successfully.")
+            } else {
+                println("Transaction with id $transactionId not found in the electronic item.")
+            }
+        } ?: println("Electronic item with id $electronicId not found.")
+    }
+}
+fun markTransactionStatusInElectronicItem(ElectronicAPI: ElectronicAPI) {
+    electronicAPI.listAllElectronics()
+
+    if (electronicAPI.numberOfElectronics() > 0) {
+        val electronicId = readNextInt("Enter the id of the electronic item to mark transaction status: ")
+
+        electronicAPI.findElectronic(electronicId)?.let { electronic ->
+            val transactionId = readNextInt("Enter the id of the transaction to mark status: ")
+
+            val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
+
+            if (existingTransaction != null) {
+                val isComplete = readNextLine("Mark transaction as complete? (yes/no)").equals("yes", ignoreCase = true)
+
+                existingTransaction.isItemComplete = isComplete
+
+                println("Transaction status marked successfully.")
             } else {
                 println("Transaction with id $transactionId not found in the electronic item.")
             }
