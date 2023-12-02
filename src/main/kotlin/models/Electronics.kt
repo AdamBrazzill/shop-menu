@@ -9,7 +9,8 @@ data class Electronics(
     var numberInStock: Int,
     var reorderLevel: Int,
     var isNoteArchived: Boolean = false,
-    var transactions: MutableList<Transactions> = mutableListOf()
+    var transactions: MutableList<Transactions> = mutableListOf(),
+    var price: Int = 0 // Add a new property for the price
 ) {
     companion object {
         fun addTransaction(newTransaction: Transactions): Boolean {

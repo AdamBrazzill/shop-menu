@@ -14,14 +14,16 @@ fun runMenu() {
         when (val option = mainMenu()) {
             9 -> load()
             1 -> addElectronicItem()
-            2 -> listAllElectronics(electronicAPI)
+            2 -> listAllElectronics()
             3 -> updateElectronic()
             4 -> deleteElectronicItem()
-            5 -> archiveElectronicItem(electronicAPI)
-            6 -> addTransactionToElectronicItem(electronicAPI)
-            7 -> updateTransactionInElectronicItem(electronicAPI)
-            8 -> markTransactionStatusInElectronicItem(electronicAPI)
+            5 -> archiveElectronicItem()
+            6 -> addTransactionToElectronicItem()
+            7 -> updateTransactionInElectronicItem()
+            8 -> markTransactionStatusInElectronicItem()
+            10 -> recordSaleMenu()
             11 -> save()
+            12 -> searchElectronicsByProductCode()
 
             0 -> {
                 // Save data before exiting
@@ -105,15 +107,15 @@ fun addElectronicItem() {
         println("Failed to add electronic item.")
     }
 }
-fun listAllElectronics(ElectronicAPI: ElectronicAPI) {
+fun listAllElectronics() {
     println(electronicAPI.listAllElectronics())
 }
 
-fun archiveElectronicItem(ElectronicAPI: ElectronicAPI) {
+fun archiveElectronicItem() {
     electronicAPI.archiveElectronicItem()
 }
 
-fun addTransactionToElectronicItem(ElectronicAPI: ElectronicAPI) {
+fun addTransactionToElectronicItem() {
     electronicAPI.addTransactionToElectronicItem()
 }
 fun deleteElectronicItem() {
@@ -129,59 +131,23 @@ fun deleteElectronicItem() {
         }
     }
 }
-fun updateTransactionInElectronicItem(ElectronicAPI: ElectronicAPI) {
+fun updateTransactionInElectronicItem() {
     electronicAPI.listAllElectronics()
-
-    if (electronicAPI.numberOfElectronics() > 0) {
-        val electronicId = readNextInt("Enter the id of the electronic item to update a transaction for: ")
-
-        electronicAPI.findElectronic(electronicId)?.let { electronic ->
-            val transactionId = readNextInt("Enter the id of the transaction to update: ")
-
-            val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
-
-            if (existingTransaction != null) {
-                val updatedNumberBought = readNextInt("Enter the updated number bought: ")
-                val updatedCustomerName = readNextLine("Enter the updated customer name: ")
-                val updatedDate = readNextLine("Enter the updated date: ")
-                val updatedSalesPerson = readNextLine("Enter the updated sales person: ")
-
-                existingTransaction.apply {
-                    numberBought = updatedNumberBought
-                    customerName = updatedCustomerName
-                    date = updatedDate
-                    salesPerson = updatedSalesPerson
-                }
-
-                println("Transaction updated successfully.")
-            } else {
-                println("Transaction with id $transactionId not found in the electronic item.")
-            }
-        } ?: println("Electronic item with id $electronicId not found.")
-    }
+    electronicAPI.updateTransactionInElectronicItem()
 }
-fun markTransactionStatusInElectronicItem(ElectronicAPI: ElectronicAPI) {
+fun searchElectronicsByProductCode() {
     electronicAPI.listAllElectronics()
 
-    if (electronicAPI.numberOfElectronics() > 0) {
-        val electronicId = readNextInt("Enter the id of the electronic item to mark transaction status: ")
+    val searchString = readNextLine("Enter the product code to search for: ")
+    val result = electronicAPI.searchElectronicsByProductCode(searchString)
 
-        electronicAPI.findElectronic(electronicId)?.let { electronic ->
-            val transactionId = readNextInt("Enter the id of the transaction to mark status: ")
+    println(result)
+}
 
-            val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
+fun markTransactionStatusInElectronicItem() {
+    electronicAPI.listAllElectronics()
 
-            if (existingTransaction != null) {
-                val isComplete = readNextLine("Mark transaction as complete? (yes/no)").equals("yes", ignoreCase = true)
-
-                existingTransaction.isItemComplete = isComplete
-
-                println("Transaction status marked successfully.")
-            } else {
-                println("Transaction with id $transactionId not found in the electronic item.")
-            }
-        } ?: println("Electronic item with id $electronicId not found.")
-    }
+    electronicAPI.markTransactionStatus(electronicAPI)
 }
 
 fun save() {
@@ -202,6 +168,19 @@ fun load() {
         println("Load successful")
     } else {
         println("Load failed")
+    }
+}
+
+private fun recordSaleMenu() {
+    val staffId = readNextInt("Enter Staff ID: ")
+    val customerName = readNextLine("Enter Customer Name: ")
+    val itemId = readNextInt("Enter Item ID: ")
+    val price = readNextInt("Enter Price of the Item: ")
+
+    if (electronicAPI.recordSale(staffId, customerName, itemId, price)) {
+        println("Sale recorded successfully.")
+    } else {
+        println("Failed to record sale.")
     }
 }
 

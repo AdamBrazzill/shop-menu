@@ -333,6 +333,37 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
+    fun recordSale(staffId: Int, customerName: String, itemId: Int, price: Int): Boolean {
+        try {
+            if (isValidIndex(itemId)) {
+                val electronic = findElectronic(itemId)
+                val saleTransaction = Transactions(
+                    numberBought = 1, // Assuming one item is bought in each sale
+                    customerName = customerName,
+                    date = getCurrentDate(), // You might want to implement a function to get the current date
+                    salesPerson = "Staff ID: $staffId",
+                    isItemComplete = true // Assuming the sale is complete immediately
+                )
+
+                electronic?.let {
+                    it.transactions.add(saleTransaction)
+                    return true
+                } ?: return false
+            } else {
+                return false
+            }
+        } catch (e: Exception) {
+            println("Failed to record sale. Error: ${e.message}")
+            return false
+        }
+    }
+
+    private fun getCurrentDate(): String {
+        // Implement your logic to get the current date as a string
+        return "2023-12-01" // Placeholder date, replace it with actual logic
+    }
+
+
 
 
 
