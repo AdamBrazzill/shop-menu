@@ -8,23 +8,22 @@ data class Electronics(
     var unitCost: Double,
     var numberInStock: Int,
     var reorderLevel: Int,
-    var isNoteArchived: Boolean = false,
+    var isElectronicArchived: Boolean = false,
     var transactions: MutableList<Transactions> = mutableListOf(),
     var price: Int = 0 // Add a new property for the price
 ) {
     companion object {
-        fun addTransaction(newTransaction: Transactions): Boolean {
+        fun addTransaction(): Boolean {
             TODO("Not yet implemented")
         }
     }
 }
 
-data class Item(
-    var itemId: Int = 0,
-    // other properties of your item
-    var isItemComplete: Boolean = false,
-    var transactions: MutableList<Transactions> = mutableListOf()
-) //{
+//data class Item(
+    //var itemId: Int = 0,
+   // var isItemComplete: Boolean = false,
+    //var transactions: MutableList<Transactions> = mutableListOf()
+//) //{
     //fun addTransaction(newTransaction: Transactions): Boolean {
        // return transactions.add(Transaction)
     //}

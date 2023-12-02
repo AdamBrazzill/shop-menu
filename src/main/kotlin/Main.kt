@@ -24,6 +24,7 @@ fun runMenu() {
             10 -> recordSaleMenu()
             11 -> save()
             12 -> searchElectronicsByProductCode()
+            13 -> listArchivedElectronics()
 
             0 -> {
                 // Save data before exiting
@@ -98,7 +99,7 @@ fun addElectronicItem() {
         unitCost = unitCost.toDouble(),
         numberInStock = numberInStock,
         reorderLevel = reorderLevel,
-        isNoteArchived = false
+        isElectronicArchived = false
     )
 
     if (electronicAPI.addElectronic(newElectronic)) {
@@ -113,6 +114,9 @@ fun listAllElectronics() {
 
 fun archiveElectronicItem() {
     electronicAPI.archiveElectronicItem()
+}
+fun listArchivedElectronics() {
+    electronicAPI.listArchivedElectronics()
 }
 
 fun addTransactionToElectronicItem() {
@@ -150,6 +154,8 @@ fun markTransactionStatusInElectronicItem() {
     electronicAPI.markTransactionStatus(electronicAPI)
 }
 
+
+
 fun save() {
     try {
         electronicAPI.store()
@@ -175,9 +181,9 @@ private fun recordSaleMenu() {
     val staffId = readNextInt("Enter Staff ID: ")
     val customerName = readNextLine("Enter Customer Name: ")
     val itemId = readNextInt("Enter Item ID: ")
-    val price = readNextInt("Enter Price of the Item: ")
 
-    if (electronicAPI.recordSale(staffId, customerName, itemId, price)) {
+
+    if (electronicAPI.recordSale(staffId, customerName, itemId)) {
         println("Sale recorded successfully.")
     } else {
         println("Failed to record sale.")

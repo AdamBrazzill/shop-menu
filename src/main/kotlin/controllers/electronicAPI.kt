@@ -59,7 +59,7 @@ class ElectronicAPI(serializerType: Serializer) {
      */
     fun listActiveElectronics(): String =
         if (numberOfActiveElectronics() == 0) "No active electronics stored"
-        else formatListString(electronicsList.filter { electronic -> !electronic.isNoteArchived })
+        else formatListString(electronicsList.filter { electronic -> !electronic.isElectronicArchived })
 
     /**
      * Lists archived electronics.
@@ -68,14 +68,14 @@ class ElectronicAPI(serializerType: Serializer) {
      */
     fun listArchivedElectronics(): String =
         if (numberOfArchivedElectronics() == 0) "No archived electronics stored"
-        else formatListString(electronicsList.filter { electronic -> electronic.isNoteArchived })
+        else formatListString(electronicsList.filter { electronic -> electronic.isElectronicArchived })
 
     /**
      * Gets the number of archived electronics.
      *
      * @return The number of archived electronics.
      */
-    fun numberOfArchivedElectronics(): Int = electronicsList.count { electronic -> electronic.isNoteArchived }
+    fun numberOfArchivedElectronics(): Int = electronicsList.count { electronic -> electronic.isElectronicArchived }
 
     /**
      * Gets the total number of electronics.
@@ -112,7 +112,7 @@ class ElectronicAPI(serializerType: Serializer) {
      *
      * @return The number of active electronics.
      */
-    fun numberOfActiveElectronics(): Int = electronicsList.count { electronic -> !electronic.isNoteArchived }
+    fun numberOfActiveElectronics(): Int = electronicsList.count { electronic -> !electronic.isElectronicArchived }
 
     /**
      * Deletes an electronic item by its index.
@@ -120,11 +120,7 @@ class ElectronicAPI(serializerType: Serializer) {
      * @param indexToDelete The index of the electronic item to delete.
      * @return The deleted electronic item, or null if the index is invalid.
      */
-    fun delete(id: Int): Boolean {
-        val initialSize = electronicsList.size
-        electronicsList.removeIf { electronics -> electronics.itemId == id }
-        return electronicsList.size < initialSize
-    }
+
 
     /**
      * Updates an electronic item by its index.
@@ -143,7 +139,7 @@ class ElectronicAPI(serializerType: Serializer) {
             foundElectronic.unitCost = electronic.unitCost
             foundElectronic.numberInStock = electronic.numberInStock
             foundElectronic.reorderLevel = electronic.reorderLevel
-            foundElectronic.isNoteArchived = electronic.isNoteArchived
+            foundElectronic.isElectronicArchived = electronic.isElectronicArchived
             return true
         }
         // If the electronic item was not found, return false
@@ -192,8 +188,8 @@ class ElectronicAPI(serializerType: Serializer) {
     fun archiveElectronic(indexToArchive: Int): Boolean {
         if (isValidIndex(indexToArchive)) {
             val electronicToArchive = electronicsList[indexToArchive]
-            if (!electronicToArchive.isNoteArchived) {
-                electronicToArchive.isNoteArchived = true
+            if (!electronicToArchive.isElectronicArchived) {
+                electronicToArchive.isElectronicArchived = true
                 return true
             }
         }
@@ -226,7 +222,7 @@ class ElectronicAPI(serializerType: Serializer) {
             "${countElectronicsByType(type)} electronics of type $type: $listOfElectronics"
         }
     }
-    // Inside ElectronicAPI class
+
     fun archiveElectronicItem() {
         listAllElectronics()
 
@@ -270,7 +266,7 @@ class ElectronicAPI(serializerType: Serializer) {
                     salesPerson = salesPerson
                 )
 
-                if (Electronics.addTransaction(newTransaction)) {
+                if (Electronics.addTransaction()) {
                     println("Transaction added successfully.")
                 } else {
                     println("Failed to add transaction.")
@@ -278,6 +274,7 @@ class ElectronicAPI(serializerType: Serializer) {
             } ?: println("There are no electronic items for this index number.")
         }
     }
+
     fun updateTransactionInElectronicItem() {
         listAllElectronics()
 
@@ -333,30 +330,39 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-    fun recordSale(staffId: Int, customerName: String, itemId: Int, price: Int): Boolean {
+    fun recordSale(staffId: Int, customerName: String, itemId: Int): Boolean {
         try {
-            if (isValidIndex(itemId)) {
-                val electronic = findElectronic(itemId)
-                val saleTransaction = Transactions(
-                    numberBought = 1, // Assuming one item is bought in each sale
-                    customerName = customerName,
-                    date = getCurrentDate(), // You might want to implement a function to get the current date
-                    salesPerson = "Staff ID: $staffId",
-                    isItemComplete = true // Assuming the sale is complete immediately
-                )
+            val electronic = findElectronic(itemId)
 
-                electronic?.let {
-                    it.transactions.add(saleTransaction)
+            if (electronic != null) {
+                val price = electronic.price
+
+                if (price > 0) {
+                    val saleTransaction = Transactions(
+                        transactionId = getId(),
+                        numberBought = 1,
+                        customerName = customerName,
+                        date = getCurrentDate(),
+                        salesPerson = "Staff ID: $staffId",
+                        isItemComplete = true
+                    )
+
+                    electronic.transactions.add(saleTransaction)
+                    println("Sale recorded successfully. Price: $price")
                     return true
-                } ?: return false
+                } else {
+                    println("Error: Item with ID $itemId doesn't have a price.")
+                }
             } else {
-                return false
+                println("Error: Electronic item with ID $itemId not found.")
             }
         } catch (e: Exception) {
             println("Failed to record sale. Error: ${e.message}")
-            return false
         }
+        return false
     }
+
+
 
     private fun getCurrentDate(): String {
         // Implement your logic to get the current date as a string
