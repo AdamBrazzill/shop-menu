@@ -16,15 +16,16 @@ fun runMenu() {
             2 -> addElectronicItem()
             3 -> listAllElectronics()
             4 -> updateElectronic()
-            5 -> deleteElectronicItem()
-            6 -> archiveElectronicItem()
+            5 -> addPriceForElectronicItem()
+            6 -> checkPriceOfElectronicItem()
             7 -> addTransactionToElectronicItem()
             8 -> updateTransactionInElectronicItem()
             9 -> markTransactionStatusInElectronicItem()
-            10 -> recordSaleMenu()
+            //10 -> recordSaleMenu()
             11 -> save()
             12 -> searchElectronicsByProductCode()
-            13 -> listArchivedElectronics()
+            //13 -> listArchivedElectronics()
+            14 -> addPriceForElectronicItem()
 
             0 -> {
                 // Save data before exiting
@@ -43,22 +44,24 @@ fun mainMenu() = readNextInt(
          > |                  Store System                     |
          > -----------------------------------------------------  
          > | ELECTRONIC MENU                                   |
-         > |   1) Add an electronic item                       |
-         > |   2) List electronic items                        |
-         > |   3) Update an electronic item                    |
-         > |   4) Delete an electronic item                    |
-         > |   5) Archive an electronic item                   |
+         > |   1) load                       |
+         > |   2) addElectronicItem                        |
+         > |   3) listAllElectronics                    |
+         > |   4) updateElectronic                    |
+         > |   5) addPriceForElectronicItem()                  |
          > -----------------------------------------------------  
          > | TRANSACTION MENU                                  | 
-         > |   6) Add transaction to an electronic item        |
-         > |   7) Update transaction details in an electronic  |
-         > |      item                                         |
-         > |   8) Delete transaction from an electronic item   |
-         > |   9) Mark transaction status                      | 
+         > |   6) archiveElectronicItem        |
+         > |   7) addTransactionToElectronicItem                                         |
+         > |   8) updateTransactionInElectronicItem   |
+         > |   9) markTransactionStatusInElectronicItem                      | 
          > -----------------------------------------------------  
          > | REPORT MENU FOR ELECTRONIC ITEMS                  | 
          > |   10) Search for all electronic items             |
-         > |   11) Change a electronic name                    |
+         > |   11) save                    |
+         > 12 -> searchElectronicsByProductCode
+         > 13 -> listArchivedElectronics()
+         > 14 -> addPriceForElectronicItem()
          > -----------------------------------------------------  
          > | REPORT MENU FOR TRANSACTIONS                      |                                
          > |   15) Search for all transactions                 |
@@ -73,16 +76,40 @@ fun mainMenu() = readNextInt(
 //------------------------------------
 
 fun updateElectronic() {
-    electronicAPI.listAllElectronics()  // Use listAllElectronics() to display the list
+    electronicAPI.listAllElectronics()
 
     if (electronicAPI.numberOfElectronics() > 0) {
         val id = readNextInt("Enter the id of the electronic item to update: ")
 
         if (electronicAPI.findElectronic(id) != null) {
-            // ... (rest of the code)
+            // Get the updated details from the user
+            val productCode = readNextLine("Enter the updated product code: ")
+            val type = readNextLine("Enter the updated type: ")
+            val unitCost = readNextInt("Enter the updated unit cost: ")
+            val numberInStock = readNextInt("Enter the updated number in stock: ")
+            val reorderLevel = readNextInt("Enter the updated reorder level: ")
+
+            val updatedElectronic = Electronics(
+                electronicId = id,
+                productCode = productCode,
+                type = type,
+                unitCost = unitCost.toDouble(),
+                numberInStock = numberInStock,
+                reorderLevel = reorderLevel,
+                isElectronicArchived = false
+            )
+
+            // Update the electronic item
+            if (electronicAPI.updateElectronic(id, updatedElectronic)) {
+                println("Electronic item updated successfully.")
+            } else {
+                println("Failed to update electronic item.")
+            }
         } else {
-            println("There are no electronic items for this index number")
+            println("There is no electronic item with ID $id.")
         }
+    } else {
+        println("There are no electronic items to update.")
     }
 }
 fun addElectronicItem() {
@@ -94,6 +121,7 @@ fun addElectronicItem() {
 
     val newElectronic = Electronics(
         electronicId = 0,
+        itemId = 0, // This will be assigned a unique value in the addElectronic function
         productCode = productCode,
         type = type,
         unitCost = unitCost.toDouble(),
@@ -111,13 +139,20 @@ fun addElectronicItem() {
 fun listAllElectronics() {
     println(electronicAPI.listAllElectronics())
 }
+fun addPriceForElectronicItem() {
+    println(electronicAPI.addPriceForElectronicItem())
+}
 
-fun archiveElectronicItem() {
-    electronicAPI.archiveElectronicItem()
+fun checkPriceOfElectronicItem() {
+    println(electronicAPI.checkPriceOfElectronicItem())
 }
-fun listArchivedElectronics() {
-    electronicAPI.listArchivedElectronics()
-}
+
+//fun archiveElectronicItem() {
+  //  electronicAPI.archiveElectronicItem()
+//}
+//fun listArchivedElectronics() {
+   // electronicAPI.listArchivedElectronics()
+//}
 
 fun addTransactionToElectronicItem() {
     electronicAPI.listAllElectronics()
@@ -178,18 +213,18 @@ fun load() {
     }
 }
 
-private fun recordSaleMenu() {
-    val staffId = readNextInt("Enter Staff ID: ")
-    val customerName = readNextLine("Enter Customer Name: ")
-    val itemId = readNextInt("Enter Item ID: ")
+//private fun recordSaleMenu() {
+    //val staffId = readNextInt("Enter Staff ID: ")
+   // val customerName = readNextLine("Enter Customer Name: ")
+    //val itemId = readNextInt("Enter Item ID: ")
 
 
-    if (electronicAPI.recordSale(staffId, customerName, itemId)) {
-        println("Sale recorded successfully.")
-    } else {
-        println("Failed to record sale.")
-    }
-}
+    //if (electronicAPI.recordSale(staffId, customerName, itemId)) {
+       // println("Sale recorded successfully.")
+    //} else {
+      //  println("Failed to record sale.")
+   // }
+//}
 
 
 

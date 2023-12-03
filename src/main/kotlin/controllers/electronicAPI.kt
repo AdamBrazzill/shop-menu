@@ -40,8 +40,11 @@ class ElectronicAPI(serializerType: Serializer) {
      */
     fun addElectronic(electronic: Electronics): Boolean {
         electronic.electronicId = getId()
+        electronic.itemId = getId() // Assign a unique itemId here
         return electronicsList.add(electronic)
-
+    }
+    fun isValidElectronicId(id: Int): Boolean {
+        return electronicsList.any { it.electronicId == id }
     }
 
     /**
@@ -67,9 +70,9 @@ class ElectronicAPI(serializerType: Serializer) {
      *
      * @return A string representation of archived electronics.
      */
-    fun listArchivedElectronics(): String =
-        if (numberOfArchivedElectronics() == 0) "No archived electronics stored"
-        else formatListString(electronicsList.filter { electronic -> electronic.isElectronicArchived })
+   // fun listArchivedElectronics(): String =
+       // if (numberOfArchivedElectronics() == 0) "No archived electronics stored"
+        //else formatListString(electronicsList.filter { electronic -> electronic.isElectronicArchived })
 
     /**
      * Gets the number of archived electronics.
@@ -247,6 +250,47 @@ class ElectronicAPI(serializerType: Serializer) {
         return electronicsList.size < initialSize
     }
 
+    fun addPriceForElectronicItem() {
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val electronicId = readNextInt("Enter the ID of the electronic item to add a price to: ")
+
+            if (isValidElectronicId(electronicId)) {
+                val price = readNextInt("Enter the price for the electronic item: ")
+
+                Electronics.itemPrices[electronicId] = price
+
+                println("Price added successfully.")
+            } else {
+                println("Invalid electronic item ID.")
+            }
+        } else {
+            println("There are no electronic items to add a price to.")
+        }
+    }
+
+    fun checkPriceOfElectronicItem() {
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val electronicId = readNextInt("Enter the ID of the electronic item to check the price: ")
+
+            if (isValidElectronicId(electronicId)) {
+                val price = Electronics.itemPrices[electronicId]
+                if (price != null) {
+                    println("The price of the electronic item with ID $electronicId is: $price")
+                } else {
+                    println("Price not available for electronic item with ID $electronicId.")
+                }
+            } else {
+                println("Invalid electronic item ID.")
+            }
+        } else {
+            println("There are no electronic items to check the price for.")
+        }
+    }
+
 
     fun addTransactionToElectronicItem() {
         listAllElectronics()
@@ -337,32 +381,32 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-    fun recordSale(staffId: Int, customerName: String, itemId: Int): Boolean {
-        try {
-            if (isValidIndex(itemId)) {
-                val electronic = findElectronic(itemId)
+    //fun recordSale(staffId: Int, customerName: String, itemId: Int): Boolean {
+      //  try {
+          //  if (isValidIndex(itemId)) {
+              //  val electronic = findElectronic(itemId)
 
-                electronic?.let {
-                    val price = Electronics.itemPrices[itemId] ?: 0 // Get the price from the map
+                //electronic?.let {
+                 //   val price = Electronics.itemPrices[itemId] ?: 0 // Get the price from the map
 
-                    val saleTransaction = Transactions(
-                        numberBought = 1,
-                        customerName = customerName,
-                        salesPerson = "Staff ID: $staffId",
-                        isItemComplete = true
-                    )
+                  //  val saleTransaction = Transactions(
+                   //     numberBought = 1,
+                    //    customerName = customerName,
+                    //    salesPerson = "Staff ID: $staffId",
+                    //    isItemComplete = true
+                 //   )
 
-                    it.transactions.add(saleTransaction)
-                    return true
-                } ?: return false
-            } else {
-                return false
-            }
-        } catch (e: Exception) {
-            println("Failed to record sale. Error: ${e.message}")
-            return false
-        }
-    }
+                    //it.transactions.add(saleTransaction)
+                   // return true
+               // } ?: return false
+          //  } else {
+             //   return false
+          //  }
+       // } catch (e: Exception) {
+         //   println("Failed to record sale. Error: ${e.message}")
+           // return false
+       // }
+  //  }
 
 
 
