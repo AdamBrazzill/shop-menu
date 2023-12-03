@@ -44,8 +44,8 @@ fun mainMenu() = readNextInt(
          > |                  Store System                     |
          > -----------------------------------------------------  
          > | ELECTRONIC MENU                                   |
-         > |   1) load                       |
-         > |   2) addElectronicItem                        |
+         > |   1) Load Previous Electronics                    |
+         > |   2) Add an Electronic Item to the system         |
          > |   3) listAllElectronics                    |
          > |   4) updateElectronic                    |
          > |   5) addPriceForElectronicItem()                  |
@@ -151,17 +151,6 @@ fun checkPriceOfElectronicItem() {
     println(electronicAPI.checkPriceOfElectronicItem())
 }
 
-//fun archiveElectronicItem() {
-  //  electronicAPI.archiveElectronicItem()
-//}
-//fun listArchivedElectronics() {
-   // electronicAPI.listArchivedElectronics()
-//}
-
-//fun addTransactionToElectronicItem() {
-   // electronicAPI.listAllElectronics()
-   // electronicAPI.addTransactionToElectronicItem()
-//}
 fun deleteElectronicItem() {
     electronicAPI.listAllElectronics()
 
@@ -194,6 +183,12 @@ fun markTransactionStatusInElectronicItem() {
     electronicAPI.markTransactionStatus(electronicAPI)
 }
 
+//fun listElectronicsByType() {
+    //electronicAPI.listAllElectronics()
+
+  // electronicAPI.listElectronicsByType(electronicAPI)
+//}
+
 
 
 fun save() {
@@ -217,18 +212,7 @@ fun load() {
     }
 }
 
-//private fun recordSaleMenu() {
-    //val staffId = readNextInt("Enter Staff ID: ")
-   // val customerName = readNextLine("Enter Customer Name: ")
-    //val itemId = readNextInt("Enter Item ID: ")
 
-
-    //if (electronicAPI.recordSale(staffId, customerName, itemId)) {
-       // println("Sale recorded successfully.")
-    //} else {
-      //  println("Failed to record sale.")
-   // }
-//}
 
 
 
