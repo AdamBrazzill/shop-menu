@@ -6,7 +6,8 @@ data class Transactions(
     var customerName: String,
     var salesPerson: String,
     var isItemComplete: Boolean = false,
-    var price: Int = 0 // Add the new property for the price){}
+    var itemType: String
+
 ) {
     override fun toString() =
         if (isItemComplete)

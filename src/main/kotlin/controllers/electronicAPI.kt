@@ -40,7 +40,7 @@ class ElectronicAPI(serializerType: Serializer) {
      */
     fun addElectronic(electronic: Electronics): Boolean {
         electronic.electronicId = getId()
-        electronic.itemId = getId() // Assign a unique itemId here
+
         return electronicsList.add(electronic)
     }
     fun isValidElectronicId(id: Int): Boolean {
@@ -61,9 +61,9 @@ class ElectronicAPI(serializerType: Serializer) {
      *
      * @return A string representation of active electronics.
      */
-    fun listActiveElectronics(): String =
-        if (numberOfActiveElectronics() == 0) "No active electronics stored"
-        else formatListString(electronicsList.filter { electronic -> !electronic.isElectronicArchived })
+    //fun listActiveElectronics(): String =
+      //  if (numberOfActiveElectronics() == 0) "No active electronics stored"
+       // else formatListString(electronicsList.filter { electronic -> !electronic.isElectronicArchived })
 
     /**
      * Lists archived electronics.
@@ -79,7 +79,7 @@ class ElectronicAPI(serializerType: Serializer) {
      *
      * @return The number of archived electronics.
      */
-    fun numberOfArchivedElectronics(): Int = electronicsList.count { electronic -> electronic.isElectronicArchived }
+    //fun numberOfArchivedElectronics(): Int = electronicsList.count { electronic -> electronic.isElectronicArchived }
 
     /**
      * Gets the total number of electronics.
@@ -116,7 +116,7 @@ class ElectronicAPI(serializerType: Serializer) {
      *
      * @return The number of active electronics.
      */
-    fun numberOfActiveElectronics(): Int = electronicsList.count { electronic -> !electronic.isElectronicArchived }
+   // fun numberOfActiveElectronics(): Int = electronicsList.count { electronic -> !electronic.isElectronicArchived }
 
     /**
      * Deletes an electronic item by its index.
@@ -143,7 +143,7 @@ class ElectronicAPI(serializerType: Serializer) {
             foundElectronic.unitCost = electronic.unitCost
             foundElectronic.numberInStock = electronic.numberInStock
             foundElectronic.reorderLevel = electronic.reorderLevel
-            foundElectronic.isElectronicArchived = electronic.isElectronicArchived
+
             return true
         }
         // If the electronic item was not found, return false
@@ -189,16 +189,16 @@ class ElectronicAPI(serializerType: Serializer) {
      * @param indexToArchive The index of the electronic item to archive.
      * @return `true` if the archive is successful, `false` otherwise.
      */
-    fun archiveElectronic(indexToArchive: Int): Boolean {
-        if (isValidIndex(indexToArchive)) {
-            val electronicToArchive = electronicsList[indexToArchive]
-            if (!electronicToArchive.isElectronicArchived) {
-                electronicToArchive.isElectronicArchived = true
-                return true
-            }
-        }
-        return false
-    }
+    //fun archiveElectronic(indexToArchive: Int): Boolean {
+        //if (isValidIndex(indexToArchive)) {
+           // val electronicToArchive = electronicsList[indexToArchive]
+            //if (!electronicToArchive.isElectronicArchived) {
+              //  electronicToArchive.isElectronicArchived = true
+               // return true
+          //  }
+      //  }
+       // return false
+    //}
 
     /**
      * Searches for electronics by product code.
@@ -227,23 +227,23 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-    fun archiveElectronicItem() {
-        listAllElectronics()
+    //fun archiveElectronicItem() {
+        //listAllElectronics()
 
-        if (numberOfElectronics() > 0) {
-            val id = readNextInt("Enter the id of the electronic item to archive: ")
+       // if (numberOfElectronics() > 0) {
+          //  val id = readNextInt("Enter the id of the electronic item to archive: ")
 
-            if (findElectronic(id) != null) {
-                if (archiveElectronic(id)) {
-                    println("Electronic item archived successfully.")
-                } else {
-                    println("Failed to archive electronic item.")
-                }
-            } else {
-                println("There are no electronic items for this index number.")
-            }
-        }
-    }
+           // if (findElectronic(id) != null) {
+             //   if (archiveElectronic(id)) {
+                   // println("Electronic item archived successfully.")
+               // } else {
+                 //   println("Failed to archive electronic item.")
+               // }
+           // } else {
+            //    println("There are no electronic items for this index number.")
+            //}
+       // }
+   // }
     fun deleteElectronic(id: Int): Boolean {
         val initialSize = electronicsList.size
         electronicsList.removeIf { electronic -> electronic.electronicId == id }
@@ -292,40 +292,7 @@ class ElectronicAPI(serializerType: Serializer) {
     }
 
 
-    fun addTransactionToElectronicItem() {
-        listAllElectronics()
 
-        if (numberOfElectronics() > 0) {
-            val id = readNextInt("Enter the id of the electronic item to add a transaction to: ")
-
-            findElectronic(id)?.let { electronic ->
-                // Check if itemPrices map contains the price for the given itemId
-                if (Electronics.itemPrices.containsKey(id)) {
-                    val unitCost = electronic.unitCost // Get the unit cost from the electronic item
-                    val price = Electronics.itemPrices[id]!! // Get the price from the map
-
-                    val numberBought = readNextInt("Enter the number bought: ")
-                    val customerName = readNextLine("Enter the customer name: ")
-
-                    val salesPerson = readNextLine("Enter the sales person: ")
-
-                    val newTransaction = Transactions(
-                        transactionId = 0,
-                        numberBought = numberBought,
-                        customerName = customerName,
-                        salesPerson = salesPerson,
-                        isItemComplete = false,
-                        price = price // Set the price property in Transactions
-                    )
-
-                    electronic.transactions.add(newTransaction)
-                    println("Transaction added successfully.")
-                } else {
-                    println("Price not available for itemId $id.")
-                }
-            } ?: println("There are no electronic items for this index number.")
-        }
-    }
 
 
     fun updateTransactionInElectronicItem() {
@@ -414,6 +381,72 @@ class ElectronicAPI(serializerType: Serializer) {
         // Implement your logic to get the current date as a string
         return "2023-12-01" // Placeholder date, replace it with actual logic
     }
+
+    fun sellElectronicItem() {
+        val staffId = readNextInt("Enter the staff ID: ")
+
+        listAllElectronics()
+
+        if (numberOfElectronics() > 0) {
+            val electronicId = readNextInt("Enter the ID of the electronic item to sell: ")
+
+            findElectronic(electronicId)?.let { electronic ->
+                // Check if itemPrices map contains the price for the given itemId
+                if (Electronics.itemPrices.containsKey(electronicId)) {
+                    val unitCost = electronic.unitCost // Get the unit cost from the electronic item
+
+                    // Prompt user to select item type during the sale
+                    val itemType = readItemType()
+
+                    val numberSold = readNextInt("Enter the number sold: ")
+                    val customerName = readNextLine("Enter the customer name: ")
+
+                    val saleTransaction = Transactions(
+                        transactionId = 0,
+                        numberBought = -numberSold, // Negative to indicate a sale
+                        customerName = customerName,
+                        salesPerson = "Staff ID: $staffId",
+                        isItemComplete = true,
+                        itemType = itemType // Include the selected item type
+                    )
+
+                    electronic.transactions.add(saleTransaction)
+                    println("Sale recorded successfully.")
+
+                    // Display sold item details
+                    println("Customer: $customerName")
+                    println("Item ID: $electronicId")
+                    println("Product Code: ${electronic.productCode}")
+                    println("Unit Cost: $unitCost")
+                    println("Item Type: ${electronic.type} ($itemType)")
+
+                    // Save the updated electronics list to XML
+                    store()
+                } else {
+                    println("Price not available for itemId $electronicId.")
+                }
+            } ?: println("Electronic item with id $electronicId not found.")
+        } else {
+            println("There are no electronic items to sell.")
+        }
+    }
+    fun readItemType(): String {
+        println("Select the item type:")
+        println("1 -> TV")
+        println("2 -> Hoover")
+        println("3 -> Phone")
+
+        val itemTypeNumber = readNextInt("Enter the number of the item type: ")
+
+        return when (itemTypeNumber) {
+            1 -> "TV"
+            2 -> "Hoover"
+            3 -> "Phone"
+            else -> "Unknown"
+        }
+    }
+
+
 
 
 

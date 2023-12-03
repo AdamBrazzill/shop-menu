@@ -18,10 +18,10 @@ fun runMenu() {
             4 -> updateElectronic()
             5 -> addPriceForElectronicItem()
             6 -> checkPriceOfElectronicItem()
-            7 -> addTransactionToElectronicItem()
+            //7 -> addTransactionToElectronicItem()
             8 -> updateTransactionInElectronicItem()
             9 -> markTransactionStatusInElectronicItem()
-            //10 -> recordSaleMenu()
+            10 -> sellElectronicItem()
             11 -> save()
             12 -> searchElectronicsByProductCode()
             //13 -> listArchivedElectronics()
@@ -57,7 +57,7 @@ fun mainMenu() = readNextInt(
          > |   9) markTransactionStatusInElectronicItem                      | 
          > -----------------------------------------------------  
          > | REPORT MENU FOR ELECTRONIC ITEMS                  | 
-         > |   10) Search for all electronic items             |
+         > |   10) sellElectronicItem             |
          > |   11) save                    |
          > 12 -> searchElectronicsByProductCode
          > 13 -> listArchivedElectronics()
@@ -96,7 +96,7 @@ fun updateElectronic() {
                 unitCost = unitCost.toDouble(),
                 numberInStock = numberInStock,
                 reorderLevel = reorderLevel,
-                isElectronicArchived = false
+
             )
 
             // Update the electronic item
@@ -121,13 +121,12 @@ fun addElectronicItem() {
 
     val newElectronic = Electronics(
         electronicId = 0,
-        itemId = 0, // This will be assigned a unique value in the addElectronic function
         productCode = productCode,
         type = type,
         unitCost = unitCost.toDouble(),
         numberInStock = numberInStock,
         reorderLevel = reorderLevel,
-        isElectronicArchived = false
+
     )
 
     if (electronicAPI.addElectronic(newElectronic)) {
@@ -138,6 +137,11 @@ fun addElectronicItem() {
 }
 fun listAllElectronics() {
     println(electronicAPI.listAllElectronics())
+}
+
+fun sellElectronicItem() {
+    println(electronicAPI.sellElectronicItem())
+
 }
 fun addPriceForElectronicItem() {
     println(electronicAPI.addPriceForElectronicItem())
@@ -154,10 +158,10 @@ fun checkPriceOfElectronicItem() {
    // electronicAPI.listArchivedElectronics()
 //}
 
-fun addTransactionToElectronicItem() {
-    electronicAPI.listAllElectronics()
-    electronicAPI.addTransactionToElectronicItem()
-}
+//fun addTransactionToElectronicItem() {
+   // electronicAPI.listAllElectronics()
+   // electronicAPI.addTransactionToElectronicItem()
+//}
 fun deleteElectronicItem() {
     electronicAPI.listAllElectronics()
 

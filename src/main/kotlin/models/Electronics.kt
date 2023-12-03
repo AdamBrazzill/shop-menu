@@ -1,15 +1,13 @@
 package models
 data class Electronics(
-    var itemId: Int = 0,
     var electronicId: Int,
     var productCode: String,
     var type: String,
     var unitCost: Double,
     var numberInStock: Int,
     var reorderLevel: Int,
-    var isElectronicArchived: Boolean = false,
-    var transactions: MutableList<Transactions> = mutableListOf(),
-    var price: Int = 0 // Add a new property for the price
+    var transactions: MutableList<Transactions> = mutableListOf()
+
 ) {
 
     companion object {
@@ -30,7 +28,7 @@ data class Electronics(
                  customerName,
                  salesPerson,
                  false,
-                 price
+
             )
         }
     }
