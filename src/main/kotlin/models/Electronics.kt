@@ -1,4 +1,16 @@
 package models
+
+/**
+ * Data class representing an electronic item.
+ *
+ * @property electronicId The unique identifier for the electronic item.
+ * @property productCode The product code of the electronic item.
+ * @property type The type of the electronic item.
+ * @property unitCost The unit cost of the electronic item.
+ * @property numberInStock The current stock level of the electronic item.
+ * @property reorderLevel The reorder level for the electronic item.
+ * @property transactions The list of transactions associated with the electronic item.
+ */
 data class Electronics(
     var electronicId: Int,
     var productCode: String,
@@ -12,15 +24,27 @@ data class Electronics(
     companion object {
         private var electronicsList = ArrayList<Electronics>()
 
+        /**
+         * Map to store item prices with electronic item IDs as keys.
+         */
         val itemPrices: MutableMap<Int, Int> = mutableMapOf()
 
+        /**
+         * Adds a transaction for an electronic item.
+         *
+         * @param itemId The ID of the electronic item.
+         * @param customerName The name of the customer.
+         * @param numberBought The number of items bought in the transaction.
+         * @param salesPerson The salesperson associated with the transaction.
+         * @return `true` if the transaction is successfully added, `false` otherwise.
+         */
         fun addTransaction(
             itemId: Int,
             customerName: String,
             numberBought: Int,
             salesPerson: String
         ): Boolean {
-            // Check if the itemId is valid
+
             val electronicsItem = getElectronicsItem(itemId)
             return if (electronicsItem != null) {
                 // Implementation to add a transaction
@@ -41,8 +65,13 @@ data class Electronics(
             }
         }
 
-        public fun getElectronicsItem(itemId: Int): Electronics? {
-
+        /**
+         * Retrieves an electronic item by its ID.
+         *
+         * @param itemId The ID of the electronic item.
+         * @return The electronic item with the specified ID, or `null` if not found.
+         */
+        private fun getElectronicsItem(itemId: Int): Electronics? {
             return electronicsList.find { it.electronicId == itemId }
         }
     }

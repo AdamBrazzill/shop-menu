@@ -1,4 +1,3 @@
-
 import controllers.ElectronicAPI
 import models.Electronics
 import persistence.XMLSerializer
@@ -6,9 +5,19 @@ import utils.ScannerInput.readNextInt
 import utils.ScannerInput.readNextLine
 import java.io.File
 
+/**
+ * Represents the main electronic store API.
+ */
 private val electronicAPI = ElectronicAPI(XMLSerializer(File("electronics.xml")))
+
+/**
+ * The main entry point for the electronic store system.
+ */
 fun main() = runMenu()
 
+/**
+ * Runs the main menu loop.
+ */
 fun runMenu() {
     do {
         when (val option = mainMenu()) {
@@ -18,17 +27,13 @@ fun runMenu() {
             4 -> updateElectronic()
             5 -> addPriceForElectronicItem()
             6 -> checkPriceOfElectronicItem()
-            //7 -> addTransactionToElectronicItem()
+            7 -> sellElectronicItem()
             8 -> updateTransactionInElectronicItem()
             9 -> markTransactionStatusInElectronicItem()
-            10 -> sellElectronicItem()
-            11 -> save()
-            12 -> searchElectronicsByProductCode()
-            //13 -> listArchivedElectronics()
-            14 -> addPriceForElectronicItem()
-
+            10 -> save()
+            11 -> searchElectronicsByProductCode()
+            12 -> deleteElectronicItem()
             0 -> {
-                // Save data before exiting
                 electronicAPI.store()
                 println("Exiting the system. Goodbye!")
                 return
@@ -38,6 +43,10 @@ fun runMenu() {
     } while (true)
 }
 
+/**
+ * Displays the main menu and returns the user's choice.
+ * @return The user's menu choice.
+ */
 fun mainMenu() = readNextInt(
     """ 
          > -----------------------------------------------------  
@@ -46,35 +55,28 @@ fun mainMenu() = readNextInt(
          > | ELECTRONIC MENU                                   |
          > |   1) Load Previous Electronics                    |
          > |   2) Add an Electronic Item to the system         |
-         > |   3) listAllElectronics                    |
-         > |   4) updateElectronic                    |
-         > |   5) addPriceForElectronicItem()                  |
+         > |   3) List All Electronics                         |
+         > |   4) Update info on an Electronic                 |
+         > |   5) Add Price to an Electronic Item              |
          > -----------------------------------------------------  
          > | TRANSACTION MENU                                  | 
-         > |   6) archiveElectronicItem        |
-         > |   7) addTransactionToElectronicItem                                         |
-         > |   8) updateTransactionInElectronicItem   |
-         > |   9) markTransactionStatusInElectronicItem                      | 
+         > |   6) Check Price of an Item                       |
+         > |   7) Sales                                        |
+         > |   8) Update Transaction                           |
+         > |   9) Mark Transaction                             | 
          > -----------------------------------------------------  
          > | REPORT MENU FOR ELECTRONIC ITEMS                  | 
-         > |   10) sellElectronicItem             |
-         > |   11) save                    |
-         > 12 -> searchElectronicsByProductCode
-         > 13 -> listArchivedElectronics()
-         > 14 -> addPriceForElectronicItem()
-         > -----------------------------------------------------  
-         > | REPORT MENU FOR TRANSACTIONS                      |                                
-         > |   15) Search for all transactions                 |
-         > -----------------------------------------------------  
+         > |   10) Save                                        |
+         > |   11) Search Item by Code                         |
+         > |   12) Delete an Item                              |
          > |   0) Exit                                         |
          > -----------------------------------------------------  
          > ==>> """.trimMargin(">")
 )
 
-//------------------------------------
-//ELECTRONIC MENU
-//------------------------------------
-
+/**
+ * Updates information for an electronic item.
+ */
 fun updateElectronic() {
     electronicAPI.listAllElectronics()
 
@@ -82,7 +84,6 @@ fun updateElectronic() {
         val id = readNextInt("Enter the id of the electronic item to update: ")
 
         if (electronicAPI.findElectronic(id) != null) {
-            // Get the updated details from the user
             val productCode = readNextLine("Enter the updated product code: ")
             val type = readNextLine("Enter the updated type: ")
             val unitCost = readNextInt("Enter the updated unit cost: ")
@@ -95,11 +96,9 @@ fun updateElectronic() {
                 type = type,
                 unitCost = unitCost.toDouble(),
                 numberInStock = numberInStock,
-                reorderLevel = reorderLevel,
-
+                reorderLevel = reorderLevel
             )
 
-            // Update the electronic item
             if (electronicAPI.updateElectronic(id, updatedElectronic)) {
                 println("Electronic item updated successfully.")
             } else {
@@ -112,6 +111,10 @@ fun updateElectronic() {
         println("There are no electronic items to update.")
     }
 }
+
+/**
+ * Adds a new electronic item to the system.
+ */
 fun addElectronicItem() {
     val productCode = readNextLine("Enter a product code for the electronic item: ")
     val type = readNextLine("Enter the type for the electronic item: ")
@@ -125,8 +128,7 @@ fun addElectronicItem() {
         type = type,
         unitCost = unitCost.toDouble(),
         numberInStock = numberInStock,
-        reorderLevel = reorderLevel,
-
+        reorderLevel = reorderLevel
     )
 
     if (electronicAPI.addElectronic(newElectronic)) {
@@ -135,22 +137,38 @@ fun addElectronicItem() {
         println("Failed to add electronic item.")
     }
 }
+
+/**
+ * Lists all electronic items in the system.
+ */
 fun listAllElectronics() {
     println(electronicAPI.listAllElectronics())
 }
 
+/**
+ * Sells an electronic item.
+ */
 fun sellElectronicItem() {
     println(electronicAPI.sellElectronicItem())
-
 }
+
+/**
+ * Adds a price for an electronic item.
+ */
 fun addPriceForElectronicItem() {
     println(electronicAPI.addPriceForElectronicItem())
 }
 
+/**
+ * Checks the price of an electronic item.
+ */
 fun checkPriceOfElectronicItem() {
     println(electronicAPI.checkPriceOfElectronicItem())
 }
 
+/**
+ * Deletes an electronic item.
+ */
 fun deleteElectronicItem() {
     electronicAPI.listAllElectronics()
 
@@ -164,10 +182,18 @@ fun deleteElectronicItem() {
         }
     }
 }
+
+/**
+ * Updates a transaction in an electronic item.
+ */
 fun updateTransactionInElectronicItem() {
     electronicAPI.listAllElectronics()
     electronicAPI.updateTransactionInElectronicItem()
 }
+
+/**
+ * Searches for electronic items by product code.
+ */
 fun searchElectronicsByProductCode() {
     electronicAPI.listAllElectronics()
 
@@ -177,20 +203,17 @@ fun searchElectronicsByProductCode() {
     println(result)
 }
 
+/**
+ * Marks the transaction status in an electronic item.
+ */
 fun markTransactionStatusInElectronicItem() {
     electronicAPI.listAllElectronics()
-
     electronicAPI.markTransactionStatus(electronicAPI)
 }
 
-//fun listElectronicsByType() {
-    //electronicAPI.listAllElectronics()
-
-  // electronicAPI.listElectronicsByType(electronicAPI)
-//}
-
-
-
+/**
+ * Saves the electronic store data to a file.
+ */
 fun save() {
     try {
         electronicAPI.store()
@@ -200,7 +223,7 @@ fun save() {
 }
 
 /**
- * Loads notes from a file.
+ * Loads electronic store data from a file.
  */
 fun load() {
     val isLoadSuccessful = electronicAPI.load()
@@ -211,9 +234,3 @@ fun load() {
         println("Load failed")
     }
 }
-
-
-
-
-
-

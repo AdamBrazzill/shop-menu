@@ -1,7 +1,6 @@
 package controllers
 
 import models.Electronics
-
 import models.Transactions
 import persistence.Serializer
 import persistence.XMLSerializer
@@ -16,6 +15,11 @@ import java.io.File
  */
 private val electronicAPI = ElectronicAPI(XMLSerializer(File("electronics.xml")))
 
+/**
+ * The `ElectronicAPI` class represents the API for managing electronic items.
+ *
+ * @property serializer The serializer used for data storage.
+ */
 class ElectronicAPI(serializerType: Serializer) {
     private var electronicsList = ArrayList<Electronics>()
     private var serializer: Serializer = serializerType
@@ -40,11 +44,15 @@ class ElectronicAPI(serializerType: Serializer) {
      */
     fun addElectronic(electronic: Electronics): Boolean {
         electronic.electronicId = getId()
-
         return electronicsList.add(electronic)
-
-
     }
+
+    /**
+     * Checks if an electronic ID is valid.
+     *
+     * @param id The electronic ID to check.
+     * @return `true` if the ID is valid, `false` otherwise.
+     */
     fun isValidElectronicId(id: Int): Boolean {
         return electronicsList.any { it.electronicId == id }
     }
@@ -57,9 +65,6 @@ class ElectronicAPI(serializerType: Serializer) {
     fun listAllElectronics(): String =
         if (electronicsList.isEmpty()) "No electronics stored"
         else formatListString(electronicsList)
-
-
-
 
     /**
      * Gets the total number of electronics.
@@ -92,21 +97,6 @@ class ElectronicAPI(serializerType: Serializer) {
     }
 
     /**
-     * Gets the number of active electronics.
-     *
-     * @return The number of active electronics.
-     */
-
-
-    /**
-     * Deletes an electronic item by its index.
-     *
-     * @param indexToDelete The index of the electronic item to delete.
-     * @return The deleted electronic item, or null if the index is invalid.
-     */
-
-
-    /**
      * Updates an electronic item by its index.
      *
      * @param indexToUpdate The index of the electronic item to update.
@@ -114,29 +104,19 @@ class ElectronicAPI(serializerType: Serializer) {
      * @return `true` if the update is successful, `false` otherwise.
      */
     fun updateElectronic(indexToUpdate: Int, electronic: Electronics?): Boolean {
-        // Find the electronic item object by the index number
         val foundElectronic = findElectronic(indexToUpdate)
-        // If the electronic item exists, use the details passed as parameters to update the found item in the ArrayList.
         if ((foundElectronic != null) && (electronic != null)) {
-            foundElectronic.productCode = electronic.productCode
-            foundElectronic.type = electronic.type
-            foundElectronic.unitCost = electronic.unitCost
-            foundElectronic.numberInStock = electronic.numberInStock
-            foundElectronic.reorderLevel = electronic.reorderLevel
-
+            foundElectronic.apply {
+                productCode = electronic.productCode
+                type = electronic.type
+                unitCost = electronic.unitCost
+                numberInStock = electronic.numberInStock
+                reorderLevel = electronic.reorderLevel
+            }
             return true
         }
-
         return false
     }
-
-    /**
-     * Checks if an index is valid within the list of electronics.
-     *
-     * @param index The index to check.
-     * @return `true` if the index is valid, `false` otherwise.
-     */
-
 
     /**
      * Loads electronics from a data source.
@@ -160,9 +140,6 @@ class ElectronicAPI(serializerType: Serializer) {
     fun store() {
         serializer.write(electronicsList)
     }
-
-
-
 
     /**
      * Searches for electronics by product code.
@@ -191,13 +168,21 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-
+    /**
+     * Deletes an electronic item by its ID.
+     *
+     * @param id The ID of the electronic item to delete.
+     * @return `true` if the delete is successful, `false` otherwise.
+     */
     fun deleteElectronic(id: Int): Boolean {
         val initialSize = electronicsList.size
         electronicsList.removeIf { electronic -> electronic.electronicId == id }
         return electronicsList.size < initialSize
     }
 
+    /**
+     * Adds a price for an electronic item.
+     */
     fun addPriceForElectronicItem() {
         listAllElectronics()
 
@@ -209,9 +194,9 @@ class ElectronicAPI(serializerType: Serializer) {
 
                 val success = Electronics.addTransaction(
                     itemId = electronicId,
-                    customerName = "DefaultCustomer", // You can modify this as needed
-                    numberBought = 1, // You can modify this as needed
-                    salesPerson = "DefaultSalesPerson" // You can modify this as needed
+                    customerName = "DefaultCustomer",
+                    numberBought = 1,
+                    salesPerson = "DefaultSalesPerson"
                 )
 
                 if (success) {
@@ -228,6 +213,9 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
+    /**
+     * Checks the price of an electronic item.
+     */
     fun checkPriceOfElectronicItem() {
         listAllElectronics()
 
@@ -249,7 +237,9 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-
+    /**
+     * Adds a transaction to an electronic item.
+     */
     fun addTransactionToElectronicItem() {
         listAllElectronics()
 
@@ -257,14 +247,11 @@ class ElectronicAPI(serializerType: Serializer) {
             val id = readNextInt("Enter the id of the electronic item to add a transaction to: ")
 
             findElectronic(id)?.let { electronic ->
-                // Check if itemPrices map contains the price for the given itemId
                 if (Electronics.itemPrices.containsKey(id)) {
-                    val unitCost = electronic.unitCost // Get the unit cost from the electronic item
-
+                    val unitCost = electronic.unitCost
 
                     val numberBought = readNextInt("Enter the number bought: ")
                     val customerName = readNextLine("Enter the customer name: ")
-
                     val salesPerson = readNextLine("Enter the sales person: ")
 
                     val newTransaction = Transactions(
@@ -284,7 +271,9 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-
+    /**
+     * Updates a transaction in an electronic item.
+     */
     fun updateTransactionInElectronicItem() {
         listAllElectronics()
 
@@ -314,6 +303,10 @@ class ElectronicAPI(serializerType: Serializer) {
             } ?: println("Electronic item with id $electronicId not found.")
         }
     }
+
+    /**
+     * Marks the transaction status in an electronic item.
+     */
     fun markTransactionStatus(electronicAPI: ElectronicAPI) {
         electronicAPI.listAllElectronics()
 
@@ -326,7 +319,8 @@ class ElectronicAPI(serializerType: Serializer) {
                 val existingTransaction = electronic.transactions.find { it.transactionId == transactionId }
 
                 if (existingTransaction != null) {
-                    val isComplete = readNextLine("Mark transaction as complete? (yes/no)").equals("yes", ignoreCase = true)
+                    val isComplete =
+                        readNextLine("Mark transaction as complete? (yes/no)").equals("yes", ignoreCase = true)
 
                     existingTransaction.isItemComplete = isComplete
 
@@ -338,10 +332,10 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-
-
+    /**
+     * Sells an electronic item.
+     */
     fun sellElectronicItem() {
-
         val staffId = readNextInt("Enter the staff ID: ")
 
         listAllElectronics()
@@ -350,21 +344,18 @@ class ElectronicAPI(serializerType: Serializer) {
             val electronicId = readNextInt("Enter the ID of the electronic item to sell: ")
 
             findElectronic(electronicId)?.let { electronic ->
-                // Check if itemPrices map contains the price for the given itemId
                 if (Electronics.itemPrices.containsKey(electronicId)) {
-                    val unitCost = electronic.unitCost // Get the unit cost from the electronic item
-
+                    val unitCost = electronic.unitCost
 
                     val numberSold = readNextInt("Enter the number sold: ")
                     val customerName = readNextLine("Enter the customer name: ")
 
                     val saleTransaction = Transactions(
                         transactionId = 0,
-                        numberBought = -numberSold, // Negative to indicate a sale
+                        numberBought = -numberSold,
                         customerName = customerName,
                         salesPerson = "Staff ID: $staffId",
                         isItemComplete = true
-
                     )
 
                     electronic.transactions.add(saleTransaction)
@@ -388,15 +379,6 @@ class ElectronicAPI(serializerType: Serializer) {
         }
     }
 
-
-
-
-
-
-
-
-
-
     /**
      * Counts the number of electronics of the specified type.
      *
@@ -412,8 +394,4 @@ class ElectronicAPI(serializerType: Serializer) {
      * @return The next available ID.
      */
     private fun getId(): Int = electronicsList.size
-
-
 }
-
-
