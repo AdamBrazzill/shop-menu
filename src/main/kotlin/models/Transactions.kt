@@ -14,7 +14,7 @@ data class Transactions(
     var numberBought: Int,
     var customerName: String,
     var salesPerson: String,
-    var isItemComplete: Boolean,
+    var isItemComplete: Boolean
     // var itemType: String // Uncomment if needed in the future
 ) {
 
@@ -24,8 +24,9 @@ data class Transactions(
      * @return A formatted string containing transaction details.
      */
     override fun toString() =
-        if (isItemComplete)
+        if (isItemComplete) {
             "$transactionId: Number Bought($numberBought), Customer Name($customerName),  Sales Person($salesPerson) (Complete)"
-        else
+        } else {
             "$transactionId: Number Bought($numberBought), Customer Name($customerName),  Sales Person($salesPerson)"
+        }
 }

@@ -44,7 +44,6 @@ data class Electronics(
             numberBought: Int,
             salesPerson: String
         ): Boolean {
-
             val electronicsItem = getElectronicsItem(itemId)
             return if (electronicsItem != null) {
                 // Implementation to add a transaction

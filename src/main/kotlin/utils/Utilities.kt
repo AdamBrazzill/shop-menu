@@ -8,11 +8,10 @@ object Utilities {
     @JvmStatic
     fun formatListString(notesToFormat: List<*>): String =
         notesToFormat
-            .joinToString(separator = "\n") { note ->  "$note" }
+            .joinToString(separator = "\n") { note -> "$note" }
 
     @JvmStatic
     fun formatSetString(itemsToFormat: Set<*>): String =
         itemsToFormat
-            .joinToString(separator = "\n") { item ->  "\t$item" }
-
+            .joinToString(separator = "\n") { item -> "\t$item" }
 }

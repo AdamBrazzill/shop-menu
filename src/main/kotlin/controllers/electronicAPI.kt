@@ -8,6 +8,7 @@ import utils.ScannerInput.readNextInt
 import utils.ScannerInput.readNextLine
 import java.io.File
 
+
 /**
  * The `ElectronicAPI` class manages electronic items and provides various operations to interact with them.
  *
@@ -63,8 +64,11 @@ class ElectronicAPI(serializerType: Serializer) {
      * @return A string representation of all electronics.
      */
     fun listAllElectronics(): String =
-        if (electronicsList.isEmpty()) "No electronics stored"
-        else formatListString(electronicsList)
+        if (electronicsList.isEmpty()) {
+            "No electronics stored"
+        } else {
+            formatListString(electronicsList)
+        }
 
     /**
      * Gets the total number of electronics.
@@ -82,7 +86,9 @@ class ElectronicAPI(serializerType: Serializer) {
     fun findElectronic(index: Int): Electronics? {
         return if (isValidListIndex(index, electronicsList)) {
             electronicsList[index]
-        } else null
+        } else {
+            null
+        }
     }
 
     /**

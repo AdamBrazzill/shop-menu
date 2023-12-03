@@ -68,7 +68,6 @@ class ElectronicAPITest {
 
     @Test
     fun `validating if electronic ID is valid`() {
-
         val electronic = Electronics(
             electronicId = 0,
             productCode = "TEST123",
@@ -89,7 +88,7 @@ class ElectronicAPITest {
         |0: Electronics(electronicId=0, productCode=ELECTRONIC1, type=Type1, unitCost=100.0, numberInStock=10, reorderLevel=5, transactions=[])
         |1: Electronics(electronicId=1, productCode=ELECTRONIC2, type=Type2, unitCost=150.0, numberInStock=8, reorderLevel=3, transactions=[])
         |2: Electronics(electronicId=2, productCode=ELECTRONIC3, type=Type1, unitCost=120.0, numberInStock=12, reorderLevel=6, transactions=[])
-    """.trimMargin()
+        """.trimMargin()
 
         assertEquals(expectedOutput, electronicAPI.listAllElectronics())
 
@@ -109,12 +108,8 @@ class ElectronicAPITest {
         |1: Electronics(electronicId=1, productCode=ELECTRONIC2, type=Type2, unitCost=150.0, numberInStock=8, reorderLevel=3, transactions=[])
         |2: Electronics(electronicId=2, productCode=ELECTRONIC3, type=Type1, unitCost=120.0, numberInStock=12, reorderLevel=6, transactions=[])
         |3: Electronics(electronicId=3, productCode=TEST123, type=Test Type, unitCost=50.0, numberInStock=10, reorderLevel=5, transactions=[])
-    """.trimMargin()
+        """.trimMargin()
 
         assertEquals(updatedExpectedOutput, electronicAPI.listAllElectronics())
     }
-
-
 }
-
-
