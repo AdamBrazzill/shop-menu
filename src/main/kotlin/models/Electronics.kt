@@ -13,11 +13,16 @@ data class Electronics(
     var price: Int = 0 // Add a new property for the price
 ) {
     companion object {
+        // Map to store itemId and corresponding prices
+        val itemPrices: MutableMap<Int, Int> = mutableMapOf()
+
         fun addTransaction(): Boolean {
+            // Implementation to add a transaction
             TODO("Not yet implemented")
         }
     }
 }
+
 
 //data class Item(
     //var itemId: Int = 0,

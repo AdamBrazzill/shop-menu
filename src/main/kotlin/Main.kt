@@ -12,15 +12,15 @@ fun main() = runMenu()
 fun runMenu() {
     do {
         when (val option = mainMenu()) {
-            9 -> load()
-            1 -> addElectronicItem()
-            2 -> listAllElectronics()
-            3 -> updateElectronic()
-            4 -> deleteElectronicItem()
-            5 -> archiveElectronicItem()
-            6 -> addTransactionToElectronicItem()
-            7 -> updateTransactionInElectronicItem()
-            8 -> markTransactionStatusInElectronicItem()
+            1 -> load()
+            2 -> addElectronicItem()
+            3 -> listAllElectronics()
+            4 -> updateElectronic()
+            5 -> deleteElectronicItem()
+            6 -> archiveElectronicItem()
+            7 -> addTransactionToElectronicItem()
+            8 -> updateTransactionInElectronicItem()
+            9 -> markTransactionStatusInElectronicItem()
             10 -> recordSaleMenu()
             11 -> save()
             12 -> searchElectronicsByProductCode()
@@ -120,6 +120,7 @@ fun listArchivedElectronics() {
 }
 
 fun addTransactionToElectronicItem() {
+    electronicAPI.listAllElectronics()
     electronicAPI.addTransactionToElectronicItem()
 }
 fun deleteElectronicItem() {

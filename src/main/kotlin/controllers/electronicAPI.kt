@@ -41,6 +41,7 @@ class ElectronicAPI(serializerType: Serializer) {
     fun addElectronic(electronic: Electronics): Boolean {
         electronic.electronicId = getId()
         return electronicsList.add(electronic)
+
     }
 
     /**
@@ -246,6 +247,7 @@ class ElectronicAPI(serializerType: Serializer) {
         return electronicsList.size < initialSize
     }
 
+
     fun addTransactionToElectronicItem() {
         listAllElectronics()
 
@@ -253,27 +255,34 @@ class ElectronicAPI(serializerType: Serializer) {
             val id = readNextInt("Enter the id of the electronic item to add a transaction to: ")
 
             findElectronic(id)?.let { electronic ->
-                val numberBought = readNextInt("Enter the number bought: ")
-                val customerName = readNextLine("Enter the customer name: ")
-                val date = readNextLine("Enter the date: ")
-                val salesPerson = readNextLine("Enter the sales person: ")
+                // Check if itemPrices map contains the price for the given itemId
+                if (Electronics.itemPrices.containsKey(id)) {
+                    val unitCost = electronic.unitCost // Get the unit cost from the electronic item
+                    val price = Electronics.itemPrices[id]!! // Get the price from the map
 
-                val newTransaction = Transactions(
-                    transactionId = 0,
-                    numberBought = numberBought,
-                    customerName = customerName,
-                    date = date,
-                    salesPerson = salesPerson
-                )
+                    val numberBought = readNextInt("Enter the number bought: ")
+                    val customerName = readNextLine("Enter the customer name: ")
 
-                if (Electronics.addTransaction()) {
+                    val salesPerson = readNextLine("Enter the sales person: ")
+
+                    val newTransaction = Transactions(
+                        transactionId = 0,
+                        numberBought = numberBought,
+                        customerName = customerName,
+                        salesPerson = salesPerson,
+                        isItemComplete = false,
+                        price = price // Set the price property in Transactions
+                    )
+
+                    electronic.transactions.add(newTransaction)
                     println("Transaction added successfully.")
                 } else {
-                    println("Failed to add transaction.")
+                    println("Price not available for itemId $id.")
                 }
             } ?: println("There are no electronic items for this index number.")
         }
     }
+
 
     fun updateTransactionInElectronicItem() {
         listAllElectronics()
@@ -289,13 +298,11 @@ class ElectronicAPI(serializerType: Serializer) {
                 if (existingTransaction != null) {
                     val updatedNumberBought = readNextInt("Enter the updated number bought: ")
                     val updatedCustomerName = readNextLine("Enter the updated customer name: ")
-                    val updatedDate = readNextLine("Enter the updated date: ")
                     val updatedSalesPerson = readNextLine("Enter the updated sales person: ")
 
                     existingTransaction.apply {
                         numberBought = updatedNumberBought
                         customerName = updatedCustomerName
-                        date = updatedDate
                         salesPerson = updatedSalesPerson
                     }
 
@@ -332,34 +339,29 @@ class ElectronicAPI(serializerType: Serializer) {
 
     fun recordSale(staffId: Int, customerName: String, itemId: Int): Boolean {
         try {
-            val electronic = findElectronic(itemId)
+            if (isValidIndex(itemId)) {
+                val electronic = findElectronic(itemId)
 
-            if (electronic != null) {
-                val price = electronic.price
+                electronic?.let {
+                    val price = Electronics.itemPrices[itemId] ?: 0 // Get the price from the map
 
-                if (price > 0) {
                     val saleTransaction = Transactions(
-                        transactionId = getId(),
                         numberBought = 1,
                         customerName = customerName,
-                        date = getCurrentDate(),
                         salesPerson = "Staff ID: $staffId",
                         isItemComplete = true
                     )
 
-                    electronic.transactions.add(saleTransaction)
-                    println("Sale recorded successfully. Price: $price")
+                    it.transactions.add(saleTransaction)
                     return true
-                } else {
-                    println("Error: Item with ID $itemId doesn't have a price.")
-                }
+                } ?: return false
             } else {
-                println("Error: Electronic item with ID $itemId not found.")
+                return false
             }
         } catch (e: Exception) {
             println("Failed to record sale. Error: ${e.message}")
+            return false
         }
-        return false
     }
 
 
