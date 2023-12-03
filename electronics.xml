@@ -2,11 +2,11 @@
   <list>
     <models.Electronics>
       <electronicId>0</electronicId>
-      <productCode>2</productCode>
-      <type>2</type>
-      <unitCost>2.0</unitCost>
-      <numberInStock>2</numberInStock>
-      <reorderLevel>2</reorderLevel>
+      <productCode>1</productCode>
+      <type>1</type>
+      <unitCost>11.0</unitCost>
+      <numberInStock>1</numberInStock>
+      <reorderLevel>1</reorderLevel>
       <transactions/>
     </models.Electronics>
   </list>
